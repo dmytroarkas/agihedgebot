@@ -12,7 +12,6 @@ from collections import defaultdict
 from news import NewsHandler
 import httpx
 import re
-import signal
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -159,72 +158,72 @@ You can also just send a message, and CEO will respond to it!""",
         'filter_results': "Filtered Results",
     },
     'ru': {
-        'welcome': """👋 Добро пожаловать в AGI Hedge Fund!
+        'welcome': """👋 Welcome to AGI Hedge Fund!
 
-Наша команда:
-👨‍💼 CEO - Генеральный директор
-📢 CMO - Директор по маркетингу
-👨‍💻 CTO - Технический директор
-💰 CFO - Финансовый директор
-🛡️ CISO - Директор по информационной безопасности
-📊 CDO - Директор по данным
-⚖️ CLO - Юридический директор
-🎯 CRO - Директор по рискам
+Our team:
+👨‍💼 CEO - Chief Executive Officer
+📢 CMO - Chief Marketing Officer
+👨‍💻 CTO - Chief Technology Officer
+💰 CFO - Chief Financial Officer
+🛡️ CISO - Chief Information Security Officer
+📊 CDO - Chief Data Officer
+⚖️ CLO - Chief Legal Officer
+🎯 CRO - Chief Risk Officer
 
-Команды:
-/chat <тема> - начать групповое обсуждение
-/ask <роль> <вопрос> - задать вопрос конкретному руководителю
-/team <роли,через,запятую> <тема> - обсуждение выбранной группой
-/stop - остановить обсуждение
-/language - сменить язык
-/history - показать историю диалога
-/clear - очистить историю диалога
-/depth <число> - установить глубину истории (1-50)
-/export - экспортировать историю диалогов
-/news - переключить режим на новости
+Commands:
+/chat <topic> - start a group discussion
+/ask <role> <question> - ask a question to a specific executive
+/team <roles,separated,by,commas> <topic> - discussion with the selected group
+/stop - stop the discussion
+/language - change the language
+/history - show the dialogue history
+/clear - clear the dialogue history
+/depth <number> - set the history depth (1-50)
+/export - export the dialogue history
+/news - switch to news mode
 
-Вы также можете просто отправить сообщение, и CEO ответит на него!""",
-        'lang_changed': "Язык изменен на русский",
-        'choose_lang': "Выберите язык:",
-        'topic_request': "Пожалуйста, укажите тему для обсуждения!\nНапример: /chat инвестиционная стратегия",
-        'discussion_started': "📋 Начинаем обсуждение темы: {}",
-        'discussion_already': "Обсуждение уже идет! Используйте /stop чтобы остановить текущее обсуждение.",
-        'discussion_stopped': "🛑 Обсуждение остановлено!\nИспользуйте /chat чтобы начать новое обсуждение.",
-        'no_discussion': "Сейчас нет активного обсуждения.\nИспользуйте /chat чтобы начать новое.",
-        'role_question': "Пожалуйста, укажите роль и вопрос!\nНапример: /ask CEO как увеличить прибыль?",
-        'unknown_role': "Неизвестная роль! Доступные роли: {}",
-        'team_format': "Пожалуйста, укажите роли и тему!\nНапример: /team CEO,CTO,CFO обсудить новую торговую стратегию",
-        'team_started': "📋 Начинаем обсуждение темы: {}\nУчастники:\n{}",
-        'unknown_command': """❌ Неизвестная команда: {}
+You can also just send a message, and the CEO will respond to it!""",
+    'lang_changed': "Language changed to Russian",
+    'choose_lang': "Choose a language:",
+    'topic_request': "Please specify a topic for discussion!\nFor example: /chat investment strategy",
+    'discussion_started': "📋 Starting discussion on the topic: {}",
+    'discussion_already': "A discussion is already in progress! Use /stop to stop the current discussion.",
+    'discussion_stopped': "🛑 Discussion stopped!\nUse /chat to start a new discussion.",
+    'no_discussion': "There is no active discussion at the moment.\nUse /chat to start a new one.",
+    'role_question': "Please specify the role and question!\nFor example: /ask CEO how to increase profits?",
+    'unknown_role': "Unknown role! Available roles: {}",
+    'team_format': "Please specify the roles and topic!\nFor example: /team CEO,CTO,CFO discuss a new trading strategy",
+    'team_started': "📋 Starting discussion on the topic: {}\nParticipants:\n{}",
+    'unknown_command': """❌ Unknown command: {}
 
-Доступные команды:
-/chat <тема> - начать групповое обсуждение
-/ask <роль> <вопрос> - задать вопрос руководителю
-/team <роли,через,запятую> <тема> - обсуждение группой
-/stop - остановить обсуждение
-/language - сменить язык
-/history - показать историю диалога
-/clear - очистить историю диалога
-/depth <число> - установить глубину истории (1-50)
-/export - экспортировать историю диалогов
-/start - показать приветствие
-/news - переключить режим на новости
+Available commands:
+/chat <topic> - start a group discussion
+/ask <role> <question> - ask a question to an executive
+/team <roles,separated,by,commas> <topic> - discussion with a group
+/stop - stop the discussion
+/language - change the language
+/history - show the dialogue history
+/clear - clear the dialogue history
+/depth <number> - set the history depth (1-50)
+/export - export the dialogue history
+/start - show the welcome message
+/news - switch to news mode
 
-Вы также можете просто отправить сообщение, и CEO ответит на него!""",
-        'history_empty': "Нет истории диалога с {}",
-        'history_cleared': "История диалога с {} очищена",
-        'depth_set': "Глубина истории установлена на {} сообщений",
-        'depth_invalid': "Укажите число от 1 до 50",
-        'export_empty': "Нет истории диалогов для экспорта",
-        'current_depth': "Текущая глубина истории: {} сообщений",
-        'usage_stats': "Статистика использования",
-        'search_no_keywords': "Пожалуйста, укажите ключевые слова для поиска.",
-        'search_no_results': "По заданным ключевым словам ничего не найдено.",
-        'search_results': "Результаты поиска",
-        'filter_no_dates': "Пожалуйста, укажите начальную и конечную даты в формате ГГГГ-ММ-ДД.",
-        'filter_invalid_dates': "Неверный формат даты. Пожалуйста, используйте ГГГГ-ММ-ДД.",
-        'filter_no_results': "По заданному диапазону дат ничего не найдено.",
-        'filter_results': "Отфильтрованные результаты",
+You can also just send a message, and the CEO will respond to it!""",
+    'history_empty': "No dialogue history with {}",
+    'history_cleared': "Dialogue history with {} cleared",
+    'depth_set': "History depth set to {} messages",
+    'depth_invalid': "Please specify a number from 1 to 50",
+    'export_empty': "No dialogue history to export",
+    'current_depth': "Current history depth: {} messages",
+    'usage_stats': "Usage statistics",
+    'search_no_keywords': "Please specify keywords for the search.",
+    'search_no_results': "No results found for the specified keywords.",
+    'search_results': "Search results",
+    'filter_no_dates': "Please specify the start and end dates in the format YYYY-MM-DD.",
+    'filter_invalid_dates': "Invalid date format. Please use YYYY-MM-DD.",
+    'filter_no_results': "No results found for the specified date range.",
+    'filter_results': "Filtered results",
     }
 }
 
@@ -467,7 +466,7 @@ async def chat_loop(update: Update, context: ContextTypes.DEFAULT_TYPE, topic: s
         print(f"Error in chat_loop: {str(e)}")  # Отладочный вывод
         if chat_id in chat_tasks:
             del chat_tasks[chat_id]
-        error_msg = "Произошла ошибка. Обсуждение остановлено." if lang == 'ru' else "An error occurred. Discussion stopped."
+        error_msg = "An error occurred. Discussion stopped." if lang == 'ru' else "An error occurred. Discussion stopped."
         if hasattr(update, 'message') and update.message:
             await update.message.reply_text(error_msg)
         elif hasattr(update, 'callback_query') and update.callback_query:
@@ -553,30 +552,11 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     emoji = ROLE_EMOJI.get(role, '👤')
     await update.message.reply_text(f"{emoji} {role}:\n{response}")
 
-async def language(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [
-            InlineKeyboardButton("Русский 🇷🇺", callback_data='lang_ru'),
-            InlineKeyboardButton("English 🇬🇧", callback_data='lang_en')
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(
-        "Выберите язык / Choose your language:",
-        reply_markup=reply_markup
-    )
-
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    if query.data.startswith('lang_'):
-        lang = query.data.split('_')[1]
-        user_languages[query.message.chat_id] = lang
-        await query.message.reply_text(MESSAGES[lang]['lang_changed'])
-        # Обновляем сообщение с кнопками
-        await query.message.edit_reply_markup(reply_markup=None)
-    elif query.data.startswith('switch_'):
+    if query.data.startswith('switch_'):
         role = query.data.split('_')[1]
         chat_id = query.message.chat_id
         current_dialogs[chat_id] = role
@@ -610,25 +590,44 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if chat_id in team_roles:
             del team_roles[chat_id]
         await reset_chat_mode(chat_id)
-        await query.message.edit_text("Групповое обсуждение завершено.\nНа ваши сообщения продолжит отвечать СЕО.")
+        await query.message.edit_text("The group discussion has ended.\nThe CEO will continue to respond to your messages.")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     lang = user_languages.get(chat_id, 'ru')
     
-    # Сбрасываем состояния и задачи
-    if chat_id in chat_tasks:
-        chat_tasks[chat_id].cancel()
-        del chat_tasks[chat_id]
-    if chat_id in current_dialogs:
-        del current_dialogs[chat_id]
-    if chat_id in dialog_histories:
-        del dialog_histories[chat_id]
-    if chat_id in chat_states:
-        del chat_states[chat_id]
+    message = (
+        "👋 Welcome to AGI Hedge Fund!\n\n"
+        "Our executives:\n"
+        "👨‍💼 CEO - Chief Executive Officer\n"
+        "📈 CMO - Chief Marketing Officer\n"
+        "🛠 CTO - Chief Technology Officer\n"
+        "💰 CFO - Chief Financial Officer\n"
+        "🔒 CISO - Chief Information Security Officer\n"
+        "📊 CDO - Chief Data Officer\n"
+        "⚖️ CLO - Chief Legal Officer\n"
+        "📉 CRO - Chief Risk Officer\n\n"
+        "Our analysts:\n"
+        "📈 Indices Specialist (Indices)\n"
+        "🛢️ Commodities Specialist (Commodities)\n"
+        "💱 Forex Specialist (Currency Pairs)\n"
+        "🏢 Stocks Specialist (Stocks)\n"
+        "🪙 Crypto Specialist (Cryptocurrencies)\n\n"
+        "Commands:\n"
+        "/chat <topic> - start a group discussion\n"
+        "/ask <role> <question> - ask a question to a specific executive\n"
+        "/team <roles,separated,by,commas> <topic> - discussion with the selected group\n"
+        "/stop - stop the discussion\n"
+        "/language - change the language\n"
+        "/history - show the dialogue history\n"
+        "/clear - clear the dialogue history\n"
+        "/depth <number> - set the history depth (1-50)\n"
+        "/export - export the dialogue history\n"
+        "/news - switch to news analysis\n\n"
+        "You can also just send a message, and the CEO will respond to it!"
+    )
     
-    # Отправляем приветственное сообщение
-    await update.message.reply_text(get_message(chat_id, 'welcome'))
+    await update.message.reply_text(message)
 
 async def process_chat(update: Update, context: ContextTypes.DEFAULT_TYPE, topic: str):
     """Обработка группового чата"""
@@ -691,7 +690,7 @@ async def ask_specific(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = user_languages.get(chat_id, 'ru')
     
     await set_chat_mode(chat_id, MODE_ASK)
-    prompt = "Введите роль и ваш вопрос в формате:\nCEO как увеличить прибыль?" if lang == 'ru' else \
+    prompt = "Enter role and your question in format:\nCEO how to increase profit?" if lang == 'ru' else \
              "Enter role and your question in format:\nCEO how to increase profit?"
     await update.message.reply_text(prompt)
 
@@ -935,7 +934,7 @@ async def news_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     news_handler.start_news_mode(chat_id)
     print(f"Режим новостей установлен для чата {chat_id}")  # Отладочный вывод
     
-    message = "Аналитики на связи. Отправьте новость для получения торговых сигналов." if lang == 'ru' else \
+    message = "Analysts are ready. Send news to receive trading signals." if lang == 'ru' else \
               "Analysts are ready. Send news to receive trading signals."
     await update.message.reply_text(message)
 
@@ -991,7 +990,7 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = user_languages.get(chat_id, 'ru')
     
     await set_chat_mode(chat_id, MODE_CHAT)
-    prompt = "Пожалуйста, укажите тему для обсуждения!" if lang == 'ru' else \
+    prompt = "Please specify the topic for discussion!" if lang == 'ru' else \
              "Please specify the topic for discussion!"
     await update.message.reply_text(prompt)
 
@@ -1001,7 +1000,7 @@ async def team_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = user_languages.get(chat_id, 'ru')
     
     await set_chat_mode(chat_id, MODE_TEAM)
-    prompt = "Пожалуйста, укажите роли и тему!\nНапример: CEO,CTO,CFO обсудить новую торговую стратегию" if lang == 'ru' else \
+    prompt = "Please specify roles and topic!\nExample: CEO,CTO,CFO discuss new trading strategy" if lang == 'ru' else \
              "Please specify roles and topic!\nExample: CEO,CTO,CFO discuss new trading strategy"
     await update.message.reply_text(prompt)
 
@@ -1013,32 +1012,24 @@ async def show_continue_buttons(update: Update, context: ContextTypes.DEFAULT_TY
     keyboard = [
         [
             InlineKeyboardButton(
-                "Продолжить обсуждение" if lang == 'ru' else "Continue discussion", 
+                "Continue discussion" if lang == 'ru' else "Continue discussion", 
                 callback_data=CALLBACK_CONTINUE
             ),
             InlineKeyboardButton(
-                "Закончить обсуждение" if lang == 'ru' else "End discussion", 
+                "End discussion" if lang == 'ru' else "End discussion", 
                 callback_data=CALLBACK_END
             )
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    message = ("Цикл обсуждения завершен. Хотите продолжить?" if lang == 'ru' 
+    message = ("Discussion cycle completed. Would you like to continue?" if lang == 'ru' 
               else "Discussion cycle completed. Would you like to continue?")
     
     await update.message.reply_text(message, reply_markup=reply_markup)
 
 def main():
-    stop_event = asyncio.Event()
-
-    def handle_exit(*args):
-        stop_event.set()
-
-    signal.signal(signal.SIGINT, handle_exit)
-    signal.signal(signal.SIGTERM, handle_exit)
-
-    while not stop_event.is_set():
+    while True:
         try:
             application = Application.builder().token(TELEGRAM_TOKEN).build()
 
@@ -1048,7 +1039,6 @@ def main():
             application.add_handler(CommandHandler("ask", ask_specific))
             application.add_handler(CommandHandler("team", team_chat))
             application.add_handler(CommandHandler("stop", stop))
-            application.add_handler(CommandHandler("language", language))
             application.add_handler(CommandHandler("news", news_command))  # Обработчик для /news
             
             # Обработчики для работы с текущим собеседником
@@ -1087,7 +1077,7 @@ def main():
             print(f"Произошла ошибка: {e}. Перезапуск бота...")
             import traceback
             traceback.print_exc()
-            asyncio.run(asyncio.sleep(5))  # Используем asyncio.run для корректного ожидания
+            asyncio.sleep(5)  # Задержка перед перезапуском
 
 if __name__ == '__main__':
     main()
