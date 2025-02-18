@@ -107,10 +107,6 @@ Commands:
 /ask <role> <question> - ask specific manager
 /team <roles,comma,separated> <topic> - discussion with selected team
 /stop - stop discussion
-/history - show dialog history
-/clear - clear dialog history
-/depth <number> - set history depth (1-50)
-/export - export dialog history
 /news - switch to news mode
 
 You can also just send a message and CEO will respond to it!""",
@@ -132,10 +128,6 @@ Available commands:
 /ask <role> <question> - ask specific manager
 /team <roles,comma,separated> <topic> - discussion with selected team
 /stop - stop discussion
-/history - show dialog history
-/clear - clear dialog history
-/depth <number> - set history depth (1-50)
-/export - export dialog history
 /start - show welcome message
 /news - switch to news mode
 
@@ -173,11 +165,6 @@ You can also just send a message and CEO will respond to it!""",
 /ask <роль> <вопрос> - задать вопрос конкретному руководителю
 /team <роли,через,запятую> <тема> - обсуждение выбранной группой
 /stop - остановить обсуждение
-/language - сменить язык
-/history - показать историю диалога
-/clear - очистить историю диалога
-/depth <число> - установить глубину истории (1-50)
-/export - экспортировать историю диалогов
 /news - переключить режим на новости
 
 Вы также можете просто отправить сообщение, и CEO ответит на него!""",
@@ -199,11 +186,6 @@ You can also just send a message and CEO will respond to it!""",
 /ask <роль> <вопрос> - задать вопрос руководителю
 /team <роли,через,запятую> <тема> - обсуждение группой
 /stop - остановить обсуждение
-/language - сменить язык
-/history - показать историю диалога
-/clear - очистить историю диалога
-/depth <число> - установить глубину истории (1-50)
-/export - экспортировать историю диалогов
 /start - показать приветствие
 /news - переключить режим на новости
 
@@ -635,10 +617,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/ask <role> <question> - ask a question to a specific executive\n"
         "/team <roles,separated,by,commas> <topic> - discussion with the selected group\n"
         "/stop - stop the discussion\n"
-        "/history - show the dialogue history\n"
-        "/clear - clear the dialogue history\n"
-        "/depth <number> - set the history depth (1-50)\n"
-        "/export - export the dialogue history\n"
         "/news - switch to news analysis\n\n"
         "You can also just send a message and the CEO will respond to it!"
     )
@@ -757,31 +735,6 @@ async def current_speaker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         get_message(chat_id, 'current_speaker').format(emoji, current_role)
     )
-
-async def show_history(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
-    role = current_dialogs.get(chat_id, 'CEO')  # Получаем текущую роль
-    lang = user_languages.get(chat_id, 'ru')
-    
-    # Проверяем наличие истории
-    if chat_id not in dialog_histories:
-        await update.message.reply_text(get_message(chat_id, 'history_empty').format(role))
-        return
-    
-    if role not in dialog_histories[chat_id] or not dialog_histories[chat_id][role]:
-        await update.message.reply_text(get_message(chat_id, 'history_empty').format(role))
-        return
-    
-    history = dialog_histories[chat_id][role]
-    depth = dialog_depths.get(chat_id, DEFAULT_HISTORY_DEPTH)
-    
-    # Формируем сообщение с историей
-    history_text = f"💬 {role} - {get_message(chat_id, 'current_depth').format(depth)}\n\n"
-    for i, entry in enumerate(history[-depth:], 1):
-        history_text += f"🗣 User: {entry['user']}\n"
-        history_text += f"👤 {role}: {entry['assistant']}\n\n"
-    
-    await update.message.reply_text(history_text)
 
 async def clear_history(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
@@ -1063,7 +1016,6 @@ def main():
             application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO | filters.VIDEO & ~filters.COMMAND, message_handler))
             
             # Добавляем новые обработчики для работы с историей
-            application.add_handler(CommandHandler("history", show_history))
             application.add_handler(CommandHandler("clear", clear_history))
             application.add_handler(CommandHandler("depth", set_depth))
             application.add_handler(CommandHandler("export", export_history))
