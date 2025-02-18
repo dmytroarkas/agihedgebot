@@ -107,14 +107,13 @@ Commands:
 /ask <role> <question> - ask specific manager
 /team <roles,comma,separated> <topic> - discussion with selected team
 /stop - stop discussion
-/language - change language
 /history - show dialog history
 /clear - clear dialog history
 /depth <number> - set history depth (1-50)
 /export - export dialog history
 /news - switch to news mode
 
-You can also just send a message, and CEO will respond to it!""",
+You can also just send a message and CEO will respond to it!""",
         'lang_changed': "Language changed to English",
         'choose_lang': "Choose your language:",
         'topic_request': "Please specify the topic for discussion!\nExample: /chat investment strategy",
@@ -133,7 +132,6 @@ Available commands:
 /ask <role> <question> - ask specific manager
 /team <roles,comma,separated> <topic> - discussion with selected team
 /stop - stop discussion
-/language - change language
 /history - show dialog history
 /clear - clear dialog history
 /depth <number> - set history depth (1-50)
@@ -141,7 +139,7 @@ Available commands:
 /start - show welcome message
 /news - switch to news mode
 
-You can also just send a message, and CEO will respond to it!""",
+You can also just send a message and CEO will respond to it!""",
         'history_empty': "No dialog history with {}",
         'history_cleared': "Dialog history with {} has been cleared",
         'depth_set': "History depth set to {} messages",
@@ -642,7 +640,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/depth <number> - set the history depth (1-50)\n"
         "/export - export the dialogue history\n"
         "/news - switch to news analysis\n\n"
-        "You can also just send a message, and the CEO will respond to it!"
+        "You can also just send a message and the CEO will respond to it!"
     )
     
     await update.message.reply_text(message)
@@ -705,11 +703,10 @@ async def process_team(update: Update, context: ContextTypes.DEFAULT_TYPE, roles
 
 async def ask_specific(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')
     
     await set_chat_mode(chat_id, MODE_ASK)
-    prompt = "Введите роль и ваш вопрос в формате:\nCEO как увеличить прибыль?" if lang == 'ru' else \
-             "Enter role and your question in format:\nCEO how to increase profit?"
+    prompt = "Enter role and your question in format:\nCEO how to increase profit?"
     await update.message.reply_text(prompt)
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -945,26 +942,25 @@ async def admin_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Добавьте команду /news
 async def news_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')  # Установить английский по умолчанию
     
     # Устанавливаем режим новостей
     chat_states[chat_id] = {'mode': MODE_NEWS, 'timestamp': datetime.now()}
     news_handler.start_news_mode(chat_id)
     print(f"Режим новостей установлен для чата {chat_id}")  # Отладочный вывод
     
-    message = "Аналитики на связи. Отправьте новость для получения торговых сигналов." if lang == 'ru' else \
-              "Analysts are ready. Send news to receive trading signals."
+    message = "Analysts are ready. Send news to receive trading signals."
     await update.message.reply_text(message)
 
 async def exit_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Выход из текущего режима"""
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')
     
     current_mode = chat_states.get(chat_id, {}).get('mode', MODE_NORMAL)
     await reset_chat_mode(chat_id)
     
-    message = "Режим сброшен" if lang == 'ru' else "Mode reset"
+    message = "Mode reset"
     await update.message.reply_text(message)
 
 async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE, role: str, question: str):
@@ -1005,44 +1001,41 @@ async def process_ask(update: Update, context: ContextTypes.DEFAULT_TYPE, role: 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /chat"""
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')
     
     await set_chat_mode(chat_id, MODE_CHAT)
-    prompt = "Пожалуйста, укажите тему для обсуждения!" if lang == 'ru' else \
-             "Please specify the topic for discussion!"
+    prompt = "Please specify the topic for discussion!"
     await update.message.reply_text(prompt)
 
 async def team_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /team"""
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')
     
     await set_chat_mode(chat_id, MODE_TEAM)
-    prompt = "Пожалуйста, укажите роли и тему!\nНапример: CEO,CTO,CFO обсудить новую торговую стратегию" if lang == 'ru' else \
-             "Please specify roles and topic!\nExample: CEO,CTO,CFO discuss new trading strategy"
+    prompt = "Please specify roles and topic!\nExample: CEO,CTO,CFO discuss new trading strategy"
     await update.message.reply_text(prompt)
 
 async def show_continue_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показывает кнопки для продолжения или завершения обсуждения"""
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')
     
     keyboard = [
         [
             InlineKeyboardButton(
-                "Продолжить обсуждение" if lang == 'ru' else "Continue discussion", 
+                "Continue discussion", 
                 callback_data=CALLBACK_CONTINUE
             ),
             InlineKeyboardButton(
-                "Закончить обсуждение" if lang == 'ru' else "End discussion", 
+                "End discussion", 
                 callback_data=CALLBACK_END
             )
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    message = ("Цикл обсуждения завершен. Хотите продолжить?" if lang == 'ru' 
-              else "Discussion cycle completed. Would you like to continue?")
+    message = "Discussion cycle completed. Would you like to continue?"
     
     await update.message.reply_text(message, reply_markup=reply_markup)
 
