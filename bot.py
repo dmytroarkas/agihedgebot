@@ -12,7 +12,6 @@ from collections import defaultdict
 from news import NewsHandler
 import httpx
 import re
-import signal
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -616,19 +615,38 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     lang = user_languages.get(chat_id, 'ru')
     
-    # Сбрасываем состояния и задачи
-    if chat_id in chat_tasks:
-        chat_tasks[chat_id].cancel()
-        del chat_tasks[chat_id]
-    if chat_id in current_dialogs:
-        del current_dialogs[chat_id]
-    if chat_id in dialog_histories:
-        del dialog_histories[chat_id]
-    if chat_id in chat_states:
-        del chat_states[chat_id]
+    message = (
+        "👋 Добро пожаловать в AGI Hedge Fund!\n\n"
+        "Наши руководители:\n"
+        "👨‍💼 CEO - Генеральный директор\n"
+        "📈 CMO - Директор по маркетингу\n"
+        "🛠 CTO - Технический директор\n"
+        "💰 CFO - Финансовый директор\n"
+        "🔒 CISO - Директор по информационной безопасности\n"
+        "📊 CDO - Директор по данным\n"
+        "⚖️ CLO - Юридический директор\n"
+        "📉 CRO - Директор по рискам\n\n"
+        "Наши аналитики:\n"
+        "📈 Indices Specialist (Индексы)\n"
+        "🛢️ Commodities Specialist (Сырьевые товары)\n"
+        "💱 Forex Specialist (Валютные пары)\n"
+        "🏢 Stocks Specialist (Акции)\n"
+        "🪙 Crypto Specialist (Криптовалюты)\n\n"
+        "Команды:\n"
+        "/chat <тема> - начать групповое обсуждение\n"
+        "/ask <роль> <вопрос> - задать вопрос конкретному руководителю\n"
+        "/team <роли,через,запятую> <тема> - обсуждение выбранной группой\n"
+        "/stop - остановить обсуждение\n"
+        "/language - сменить язык\n"
+        "/history - показать историю диалога\n"
+        "/clear - очистить историю диалога\n"
+        "/depth <число> - установить глубину истории (1-50)\n"
+        "/export - экспортировать историю диалогов\n"
+        "/news - переключиться на анализ новостей\n\n"
+        "Вы также можете просто отправить сообщение, и CEO ответит на него!"
+    )
     
-    # Отправляем приветственное сообщение
-    await update.message.reply_text(get_message(chat_id, 'welcome'))
+    await update.message.reply_text(message)
 
 async def process_chat(update: Update, context: ContextTypes.DEFAULT_TYPE, topic: str):
     """Обработка группового чата"""
@@ -1030,15 +1048,7 @@ async def show_continue_buttons(update: Update, context: ContextTypes.DEFAULT_TY
     await update.message.reply_text(message, reply_markup=reply_markup)
 
 def main():
-    stop_event = asyncio.Event()
-
-    def handle_exit(*args):
-        stop_event.set()
-
-    signal.signal(signal.SIGINT, handle_exit)
-    signal.signal(signal.SIGTERM, handle_exit)
-
-    while not stop_event.is_set():
+    while True:
         try:
             application = Application.builder().token(TELEGRAM_TOKEN).build()
 
@@ -1087,7 +1097,7 @@ def main():
             print(f"Произошла ошибка: {e}. Перезапуск бота...")
             import traceback
             traceback.print_exc()
-            asyncio.run(asyncio.sleep(5))  # Используем asyncio.run для корректного ожидания
+            asyncio.sleep(5)  # Задержка перед перезапуском
 
 if __name__ == '__main__':
     main()
