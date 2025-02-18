@@ -596,38 +596,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     lang = user_languages.get(chat_id, 'ru')
     
-    message = (
-        "👋 Welcome to AGI Hedge Fund!\n\n"
-        "Our executives:\n"
-        "👨‍💼 CEO - Chief Executive Officer\n"
-        "📈 CMO - Chief Marketing Officer\n"
-        "🛠 CTO - Chief Technology Officer\n"
-        "💰 CFO - Chief Financial Officer\n"
-        "🔒 CISO - Chief Information Security Officer\n"
-        "📊 CDO - Chief Data Officer\n"
-        "⚖️ CLO - Chief Legal Officer\n"
-        "📉 CRO - Chief Risk Officer\n\n"
-        "Our analysts:\n"
-        "📈 Indices Specialist (Indices)\n"
-        "🛢️ Commodities Specialist (Commodities)\n"
-        "💱 Forex Specialist (Currency Pairs)\n"
-        "🏢 Stocks Specialist (Stocks)\n"
-        "🪙 Crypto Specialist (Cryptocurrencies)\n\n"
-        "Commands:\n"
-        "/chat <topic> - start a group discussion\n"
-        "/ask <role> <question> - ask a question to a specific executive\n"
-        "/team <roles,separated,by,commas> <topic> - discussion with the selected group\n"
-        "/stop - stop the discussion\n"
-        "/language - change the language\n"
-        "/history - show the dialogue history\n"
-        "/clear - clear the dialogue history\n"
-        "/depth <number> - set the history depth (1-50)\n"
-        "/export - export the dialogue history\n"
-        "/news - switch to news analysis\n\n"
-        "You can also just send a message, and the CEO will respond to it!"
-    )
+    # Сбрасываем состояния и задачи
+    if chat_id in chat_tasks:
+        chat_tasks[chat_id].cancel()
+        del chat_tasks[chat_id]
+    if chat_id in current_dialogs:
+        del current_dialogs[chat_id]
+    if chat_id in dialog_histories:
+        del dialog_histories[chat_id]
+    if chat_id in chat_states:
+        del chat_states[chat_id]
     
-    await update.message.reply_text(message)
+    # Отправляем приветственное сообщение
+    await update.message.reply_text(get_message(chat_id, 'welcome'))
 
 async def process_chat(update: Update, context: ContextTypes.DEFAULT_TYPE, topic: str):
     """Обработка группового чата"""
