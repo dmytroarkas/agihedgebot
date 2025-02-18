@@ -242,8 +242,8 @@ def update_usage_stats(chat_id, role):
     usage_stats['hour_distribution'][current_hour] += 1
 
 def get_message(chat_id: int, key: str) -> str:
-    # Русский язык по умолчанию
-    lang = user_languages.get(chat_id, 'ru')
+    # Английский язык по умолчанию
+    lang = user_languages.get(chat_id, 'en')
     return MESSAGES[lang][key]
 
 async def get_chatgpt_response(prompt, personality, lang='ru', selected_roles=None, dialog_history=None, chat_id=None):
@@ -613,37 +613,36 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    lang = user_languages.get(chat_id, 'ru')
+    lang = user_languages.get(chat_id, 'en')  # Установить английский по умолчанию
     
     message = (
-        "👋 Добро пожаловать в AGI Hedge Fund!\n\n"
-        "Наши руководители:\n"
-        "👨‍💼 CEO - Генеральный директор\n"
-        "📈 CMO - Директор по маркетингу\n"
-        "🛠 CTO - Технический директор\n"
-        "💰 CFO - Финансовый директор\n"
-        "🔒 CISO - Директор по информационной безопасности\n"
-        "📊 CDO - Директор по данным\n"
-        "⚖️ CLO - Юридический директор\n"
-        "📉 CRO - Директор по рискам\n\n"
-        "Наши аналитики:\n"
-        "📈 Indices Specialist (Индексы)\n"
-        "🛢️ Commodities Specialist (Сырьевые товары)\n"
-        "💱 Forex Specialist (Валютные пары)\n"
-        "🏢 Stocks Specialist (Акции)\n"
-        "🪙 Crypto Specialist (Криптовалюты)\n\n"
-        "Команды:\n"
-        "/chat <тема> - начать групповое обсуждение\n"
-        "/ask <роль> <вопрос> - задать вопрос конкретному руководителю\n"
-        "/team <роли,через,запятую> <тема> - обсуждение выбранной группой\n"
-        "/stop - остановить обсуждение\n"
-        "/language - сменить язык\n"
-        "/history - показать историю диалога\n"
-        "/clear - очистить историю диалога\n"
-        "/depth <число> - установить глубину истории (1-50)\n"
-        "/export - экспортировать историю диалогов\n"
-        "/news - переключиться на анализ новостей\n\n"
-        "Вы также можете просто отправить сообщение, и CEO ответит на него!"
+        "👋 Welcome to AGI Hedge Fund!\n\n"
+        "Our executives:\n"
+        "👨‍💼 CEO - Chief Executive Officer\n"
+        "📈 CMO - Chief Marketing Officer\n"
+        "🛠 CTO - Chief Technology Officer\n"
+        "💰 CFO - Chief Financial Officer\n"
+        "🔒 CISO - Chief Information Security Officer\n"
+        "📊 CDO - Chief Data Officer\n"
+        "⚖️ CLO - Chief Legal Officer\n"
+        "📉 CRO - Chief Risk Officer\n\n"
+        "Our analysts:\n"
+        "📈 Indices Specialist (Indices)\n"
+        "🛢️ Commodities Specialist (Commodities)\n"
+        "💱 Forex Specialist (Currency Pairs)\n"
+        "🏢 Stocks Specialist (Stocks)\n"
+        "🪙 Crypto Specialist (Cryptocurrencies)\n\n"
+        "Commands:\n"
+        "/chat <topic> - start a group discussion\n"
+        "/ask <role> <question> - ask a question to a specific executive\n"
+        "/team <roles,separated,by,commas> <topic> - discussion with the selected group\n"
+        "/stop - stop the discussion\n"
+        "/history - show the dialogue history\n"
+        "/clear - clear the dialogue history\n"
+        "/depth <number> - set the history depth (1-50)\n"
+        "/export - export the dialogue history\n"
+        "/news - switch to news analysis\n\n"
+        "You can also just send a message, and the CEO will respond to it!"
     )
     
     await update.message.reply_text(message)
@@ -1058,7 +1057,6 @@ def main():
             application.add_handler(CommandHandler("ask", ask_specific))
             application.add_handler(CommandHandler("team", team_chat))
             application.add_handler(CommandHandler("stop", stop))
-            application.add_handler(CommandHandler("language", language))
             application.add_handler(CommandHandler("news", news_command))  # Обработчик для /news
             
             # Обработчики для работы с текущим собеседником
